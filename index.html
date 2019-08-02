@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h1>Quick Substitution</h1>
+    <p>A tool for faster find and replacing.</p>
+    <h2>Input</h2>
+    <textarea id="inputtextarea" name="inputtextarea" placeholder="Input Code" rows="15" cols="50"></textarea>
+    <br>
+    <button id="substitute">Substitute</button>
+    <h2>Substituted</h2>
+    <textarea id="outputtextarea" name="outputtextarea" placeholder="Substituted Code" rows="15" cols="50"></textarea>
+
+    <script>
+        const patterns = [
+            ['\\$(\\w+)', '$1'],
+            ['answer[(\\d+)]', 'answer$1'],
+            ['answerbox\\[(\\d+)\\]', 'student_input$1'],
+            ['round\\((.*), *2\\)', 'round($1, 0.01)'],
+            ['round\\((.*), *1\\)', 'round($1, 0.1)'],
+            [' *\\+ *', ' + '],
+            [' *\\- *', ' - '],
+            [' *\\* *', ' * '],
+            [' *\\/ *', ' / '],
+            [' *= *', ' := '],
+            [' *> *', ' > '],
+            [' *< *', ' < '],
+            ['rands\\((\\w+\\.*\\w*),(\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', 'fill_list($3, random($1, $2))'],
+            ['rrand\\((\\w+\\.*\\w*),(\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', 'random($1, $2, $3)'],
+            ['rand\\((\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', 'random($1, $2)'],
+            ['nonzerorrand\\((\\w+\\.*\\w*),(\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', 'exclude(random($1, $2, $3), 0)'],
+            ['nonzerorand\\((\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', 'exclude(random($1, $2), 0)'],
+            ['randname\\(\\)', 'random_item(names_list)'],
+            ['randmalenames\\(\\)', 'random_item(male_names_list)'],
+            ['randfemalenames\\(\\)', 'random_item(female_names_list)'],
+            ['randcity\\(\\)', 'random_item(city_list)'],
+            ['randstate\\(\\)', 'random_item(states_list)'],
+            ['randcities\\(( *\\w+ *)\\)', 'fill_list($1, random_item(city_list))'],
+            ['randstates\\(( *\\w+ *)\\)', 'fill_list($1, random_item(states_list))'],
+            ['diffrandsfrom\\(( *\\w+ *),( *\\w+ *)\\)', 'fill_list($2, random_item($1))'],
+            ['randsfrom\\((\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', 'fill_list($2, random_item($1))'],
+            ['<br>', '\n'],
+            ['array\\((.*)\\)', '[$1]'],
+            ['"true"', 'true'],
+            ['"false"', 'false'],
+            ['"DNE"', 'DNE'],
+            [':= (.*);', ':= $1'],
+            ['\\`', ''],
+            ['count\\(( *\\w+ *)\\)', 'item_count($1)'],
+            ['sortarray\\(( *\\w+ *)\\)', 'sort($1)'],
+            ['unionarrays\\(( *\\w+ *),( *\\w+ *)\\)', 'set_union($1, $2)'],
+            ['intersectarrays\\(( *\\w+ *),( *\\w+ *)\\)', 'set_intersection($1, $2)'],
+            ['diffarrays\\(( *\\w+ *),( *\\w+ *)\\)', 'set_difference($1, $2)'],
+            ['\\((\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', '($1, $2)'],
+            ['\\((\\w+\\.*\\w*),(\\w+\\.*\\w*),(\\w+\\.*\\w*)\\)', '($1, $2, $3)'],
+            [' uu ', '\\cup'],
+            [' nn ', '\\cap'],
+        ];
+
+        const commonHTMLTags = ['ol', 'ul', 'li', 'table', 'thead', 'tbody', 'th', 'tr', 'td', 'i', 'b', 'u'];
+
+        const btn = document.getElementById("substitute");
+        btn.onclick = () => {
+            let inputText = document.getElementById("inputtextarea").value;
+            let substitutedText = inputText;
+            for (let tag of commonHTMLTags) {
+                substitutedText = substitutedText.replace(new RegExp(`<\\/*${tag}[^>]*>`, 'g'), '\n');
+            }
+            for (let [pattern, replacement] of patterns) {
+                substitutedText = substitutedText.replace(new RegExp(pattern, 'g'), replacement);
+            }
+            document.getElementById("outputtextarea").value = substitutedText;
+        }
+    </script>
+</body>
+
+</html>
